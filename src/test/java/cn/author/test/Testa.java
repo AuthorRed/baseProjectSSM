@@ -23,6 +23,7 @@ public class Testa extends SpringJunitTest{
 		List<User> userList = userMapper.selectByExample(userExample);
 		for (User user : userList) {
 			System.out.println("this is git update test"+user.toString());
+			System.out.println("测试全局");
 		}
 	}
 	
