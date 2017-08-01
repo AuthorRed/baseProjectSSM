@@ -22,7 +22,7 @@ public class Testa extends SpringJunitTest{
 		Criteria userCriteria = userExample.createCriteria();
 		List<User> userList = userMapper.selectByExample(userExample);
 		for (User user : userList) {
-			System.out.println(user.toString());
+			System.out.println("this is git update test"+user.toString());
 		}
 	}
 	
