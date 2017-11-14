@@ -2,11 +2,13 @@ package cn.author.entity;
 
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class User {
     private Integer id;
 
     private String name;
-
+    @JSONField(format="yyyy-MM-dd")
     private Date date;
 
     public Integer getId() {
