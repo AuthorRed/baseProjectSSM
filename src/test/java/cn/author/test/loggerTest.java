@@ -1,5 +1,8 @@
 package cn.author.test;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -16,13 +19,28 @@ import cn.author.entity.User;
 import cn.author.entity.UserExample;
 import cn.author.entity.UserExample.Criteria;
 import cn.author.mapper.UserMapper;
+import cn.author.service.ExceptionTest;
 
 public class loggerTest extends SpringJunitTest{
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private UserMapper userMapper;
-	
+	@Autowired
+	private ExceptionTest exceptionTest;
+	@Test
+	public void testException() throws IOException{
+		try {
+			exceptionTest.throwAExcetion();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.debug("这里是日志记录的异常堆栈信息:"+e.getStackTrace().toString());
+			StringWriter sw = new StringWriter();   
+			sw.close();
+	        e.printStackTrace(new PrintWriter(sw, true));   
+	        logger.debug("这里是日志记录的异常堆栈信息:"+sw.toString()+":这里是日志记录的异常堆栈信息");
+		}
+	}
 	@Test
 	public void testInsert(){
 		User user = new User();
