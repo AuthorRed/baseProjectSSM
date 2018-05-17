@@ -1,14 +1,27 @@
-package cn.author.test;
+package cn.author.mockmvc;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.alibaba.fastjson.JSON;
 
@@ -20,14 +33,64 @@ import cn.author.entity.UserExample;
 import cn.author.entity.UserExample.Criteria;
 import cn.author.mapper.UserMapper;
 import cn.author.service.ExceptionTest;
-
-public class loggerTest extends SpringJunitTest{
+@WebAppConfiguration
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:application-context.xml")
+public class MockTest{
 	Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+	@Autowired
+	private WebApplicationContext context;
 	@Autowired
 	private UserMapper userMapper;
 	@Autowired
 	private ExceptionTest exceptionTest;
+	MockMvc mvc;
+	MockHttpSession session;
+	@Before
+	public void before() {
+	//可以对所有的controller来进行测试
+		mvc = MockMvcBuilders.webAppContextSetup(context).build();
+	//仅仅对单个Controller来进行测试
+	// mockMvc = MockMvcBuilders.standaloneSetup(new MeunController()).build();
+	}
+	@Test
+	public void testPerform() throws Exception{
+		String uri = "http://localhost:8080/base/user/singleUser.do";
+		MvcResult mvcResult=null;
+		try {
+			mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+					.accept(MediaType.APPLICATION_JSON)
+					.contentType(MediaType.APPLICATION_JSON_UTF8)
+					.content(getTestJsonData()))
+			        .andReturn();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+
+        String content = mvcResult.getResponse().getContentAsString();
+        int state =  mvcResult.getResponse().getStatus();
+        System.out.println(state+" and result:"+content);
+        //将Json转为对象
+       // CcaiServiceResult result = objectMapper.readValue(content, CcaiServiceResult.class);
+//        User parseObject = JSON.parseObject(content, User.class);
+//        System.out.println(result);
+	}
+	public String getTestJsonData(){
+		User user = new User();
+		user.setDate(new Date());
+		user.setName("Xu");
+		return JSON.toJSONString(user);		
+	}
+	@Test
+	public void test1(){
+		UserExample userExample = new UserExample();
+		Criteria userCriteria = userExample.createCriteria();
+		List<User> userList = userMapper.selectByExample(userExample);
+		for (User user : userList) {
+			System.out.println("this is git update test"+JSON.toJSONString(user));
+		}
+	}
 	@Test
 	public void testException() throws IOException{
 		try {

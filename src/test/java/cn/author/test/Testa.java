@@ -6,6 +6,8 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSON;
+
 import cn.author.common.utils.SpringJunitTest;
 import cn.author.entity.User;
 import cn.author.entity.UserExample;
@@ -22,8 +24,7 @@ public class Testa extends SpringJunitTest{
 		Criteria userCriteria = userExample.createCriteria();
 		List<User> userList = userMapper.selectByExample(userExample);
 		for (User user : userList) {
-			System.out.println("this is git update test"+user.toString());
-			System.out.println("测试全局");
+			System.out.println("this is git update test"+JSON.toJSONString(user));
 		}
 	}
 	
